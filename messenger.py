@@ -11,9 +11,11 @@ import clientui
 
 
 class Messenger(QtWidgets.QMainWindow, clientui.Ui_MainWindow):
-    def __init__(self):
+    def __init__(self, server_host):
         super().__init__()
         self.setupUi(self)
+
+        self.server_host = server_host
 
         # to run on button click:
         self.pushButton.pressed.connect(self.send_message)
@@ -27,7 +29,7 @@ class Messenger(QtWidgets.QMainWindow, clientui.Ui_MainWindow):
 
     def get_messages(self):
         try:
-            response = requests.get('http://127.0.0.1:5000/messages',
+            response = requests.get(f'{self.server_host}/messages',
                                 params={'after': self.after}
                                 )
         except:
@@ -47,7 +49,7 @@ class Messenger(QtWidgets.QMainWindow, clientui.Ui_MainWindow):
         name = self.lineEdit.text()
         text = self.textEdit.toPlainText()
         try:
-            response = requests.post('http://127.0.0.1:5000/send',
+            response = requests.post(f'{self.server_host}/send',
                       json={'name': name, 'text': text}
                       )
         except:
@@ -64,6 +66,6 @@ class Messenger(QtWidgets.QMainWindow, clientui.Ui_MainWindow):
 
 
 app = QtWidgets.QApplication([])
-windows = Messenger()
+windows = Messenger(server_host='http://127.0.0.1:5000')
 windows.show()
 app.exec()
